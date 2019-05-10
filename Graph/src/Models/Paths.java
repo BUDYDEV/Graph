@@ -24,20 +24,20 @@ public class Paths {
         return routingTable;
     }
 
-    public int findDistanceBetweenCitys(ArrayList<City> towns) throws NoSuchRoute {
+    public int findDistanceBetweenCitys(ArrayList<City> citys) throws NoSuchRoute {
 
-        if (towns.size() < 2) {
+        if (citys.size() < 2) {
             return 0;
         }
 
         int distance, depth, index;
         distance = depth = index = 0;
 
-        while (index < towns.size() - 1) {
-            if (this.routingTable.containsKey(towns.get(index))) {
-                Point route = this.routingTable.get(towns.get(index));
+        while (index < citys.size() - 1) {
+            if (this.routingTable.containsKey(citys.get(index))) {
+                Point route = this.routingTable.get(citys.get(index));
                 while (route != null) {
-                    if (route.destination.equals(towns.get(index + 1))) {
+                    if (route.destination.equals(citys.get(index + 1))) {
                         distance += route.weight;
                         depth++;
                         break;
@@ -50,7 +50,7 @@ public class Paths {
             index++;
         }
 
-        if (depth != towns.size() - 1) {
+        if (depth != citys.size() - 1) {
             throw new NoSuchRoute();
         }
         return distance;
@@ -69,18 +69,18 @@ public class Paths {
             depth++;
             origin.visited = true;
 
-            Point edge = this.routingTable.get(origin);
-            while (edge != null) {
-                if (edge.destination.equals(dest)) {
+            Point point = this.routingTable.get(origin);
+            while (point != null) {
+                if (point.destination.equals(dest)) {
                     routes++;
-                    edge = edge.next;
+                    point = point.next;
                     continue;
-                } else if (!edge.destination.visited) {
+                } else if (!point.destination.visited) {
                     depth--;
-                    routes += findPaths(edge.destination, dest, depth, limit);
+                    routes += findPaths(point.destination, dest, depth, limit);
 
                 }
-                edge = edge.next;
+                point = point.next;
             }
         } else {
             noRouteException();
@@ -97,23 +97,23 @@ public class Paths {
     public int findShortestRoute(City origin, City dest, int distance, int shortestPath) throws NoSuchRoute {
         if (this.routingTable.containsKey(origin) && this.routingTable.containsKey(dest)) {
             origin.visited = true;
-            Point edge = this.routingTable.get(origin);
-            while (edge != null) {
-                if (edge.destination == dest || !edge.destination.visited) {
-                    distance += edge.weight;
+            Point point = this.routingTable.get(origin);
+            while (point != null) {
+                if (point.destination == dest || !point.destination.visited) {
+                    distance += point.weight;
                 }
 
-                if (edge.destination.equals(dest)) {
+                if (point.destination.equals(dest)) {
                     if (shortestPath == 0 || distance < shortestPath) {
                         shortestPath = distance;
                     }
                     origin.visited = false;
                     return shortestPath;
-                } /*Some backtracking and recursion */ else if (!edge.destination.visited) {
-                    shortestPath = findShortestRoute(edge.destination, dest, distance, shortestPath);
-                    distance -= edge.weight;
+                } /*Some backtracking and recursion */ else if (!point.destination.visited) {
+                    shortestPath = findShortestRoute(point.destination, dest, distance, shortestPath);
+                    distance -= point.weight;
                 }
-                edge = edge.next;
+                point = point.next;
             }
         } else {
             noRouteException();
@@ -124,7 +124,7 @@ public class Paths {
     }
 
     /*
-     * Find number of routes between towns;
+     * Find number of routes between citys;
      */
     public int numPathsWithin(City origin, City dest, int maxDistance) throws NoSuchRoute {
         return findAllPathsBetweenCitys(origin, dest, 0, maxDistance);
@@ -134,24 +134,24 @@ public class Paths {
         int routes = 0;
         if (this.routingTable.containsKey(origin) && this.routingTable.containsKey(destination)) {
 
-            Point edge = this.routingTable.get(origin);
-            while (edge != null) {
-                weight += edge.weight;
+            Point point = this.routingTable.get(origin);
+            while (point != null) {
+                weight += point.weight;
                 if (weight <= maxDistance) {
-                    if (edge.destination.equals(destination)) {
+                    if (point.destination.equals(destination)) {
                         routes++;
-                        routes += findAllPathsBetweenCitys(edge.destination, destination, weight, maxDistance);
-                        edge = edge.next;
+                        routes += findAllPathsBetweenCitys(point.destination, destination, weight, maxDistance);
+                        point = point.next;
                         continue;
                     } else {
-                        routes += findAllPathsBetweenCitys(edge.destination, destination, weight, maxDistance);
-                        weight -= edge.weight;
+                        routes += findAllPathsBetweenCitys(point.destination, destination, weight, maxDistance);
+                        weight -= point.weight;
                     }
                 } else {
-                    weight -= edge.weight;
+                    weight -= point.weight;
                 }
 
-                edge = edge.next;
+                point = point.next;
             }
         } else {
             noRouteException();
@@ -169,15 +169,15 @@ public class Paths {
     /*
  * Implementing the extentions
      */
-    public String calculateTotalTimeForRoute(ArrayList<City> towns) {
+    public String calculateTotalTimeForRoute(ArrayList<City> citys) {
 
         int totalTime = 0;
         int distance = 0;
 
         try {
 
-            distance = findDistanceBetweenCitys(towns);
-            totalTime = distance + 2 * (towns.size() - 2);
+            distance = findDistanceBetweenCitys(citys);
+            totalTime = distance + 2 * (citys.size() - 2);
 
         } catch (Exception e) {
             return e.getMessage();

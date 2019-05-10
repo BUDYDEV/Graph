@@ -27,8 +27,8 @@ package Models;
 		this.next 		= null;
 	}
 
-	public Point next(Point edge) {
-		this.next = edge;
+	public Point next(Point point) {
+		this.next = point;
 		return this;
 	}
 
